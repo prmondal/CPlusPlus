@@ -1,12 +1,10 @@
 #include <iostream>
-#include <string>
-#include <climits>
+#include <string.h>
 
 using namespace std;
 
 string rev(string s) {
-    int i,
-        l = s.size();
+    int i, l = s.length();
     
     for(i = 0; i < l / 2; i++) {
         char t = s[i];
@@ -18,42 +16,55 @@ string rev(string s) {
 }
 
 //find longest common suffix of between two substrings
-void printLongestPalindromeSubstring(string s, string revStr) {
-    int maxLen = INT_MIN;
-    string res;
+void printLongestPalindromeSubstring(string s) {
+    int maxLen = 0, n = s.length(), start = -1;
     
-    int n = s.size();
-    int t[n + 1][n + 1];
+    bool t[n][n];
     
-    for(int i = 0; i <= n; i++) {
-        t[i][0] = 0;
+    memset(t, false, sizeof(t));
+    
+    //single length string is palindrome
+    for(int i = 0; i < n; i++) {
+        t[i][i] = true;
+        
+        maxLen = 1;
+        start = i;
     }
     
-    for(int j = 0; j <= n; j++) {
-        t[0][j] = 0;
-    }
-    
-    for(int i = 1; i <= n; i++) {
-        for(int j = 1; j <= n; j++) {
-            t[i][j] = (s[i - 1] == revStr[j - 1]) ? 1 + t[i - 1][j - 1] : 0;
+    //check for two length string 
+    for(int i = 0; i < n - 1; i++) {
+        if(s[i] == s[i + 1]) {
+            maxLen = 2;
+            start = i;
             
-            if(t[i][j] > maxLen) {
-                maxLen = t[i][j];
-                res = s.substr(i - maxLen, maxLen);
+            t[i][i + 1] = true;
+        }    
+    }
+    
+    //consider all other lengths
+    for(int l = 3; l <= n; l++) {
+        for(int i = 0; i <= n - l; i++) {
+            int j = i + l - 1;
+            
+            if(s[i] == s[j] && t[i + 1][j - 1]) {
+                t[i][j] = true;
+                
+                maxLen = l;
+                start = i;
             }
         }
     }
     
     //print max length suffix
-    cout << res << " with length " << maxLen << endl;
+    cout << s.substr(start, maxLen) << " with length " << maxLen << endl;
 }
 
 int main() {
-    string s;
+    string s = "geeggeeks";//"sabsvbasvbavbsvabvsbavbsvbavbsvbavsbvavsbavvdavhdbsbdjbandabdbabdabjsbjasbavdvavdadbadbjabdsbbdsvdvavad";
     
-    getline(cin, s, '\n');
+    //getline(cin, s, '\n');
     
-    printLongestPalindromeSubstring(s, rev(s));
+    printLongestPalindromeSubstring(s);
     
     return 0;
 }
